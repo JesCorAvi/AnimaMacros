@@ -58,6 +58,38 @@ async function updateAcumulation(mode, cansancioUsado, cansancioModificacion) {
     });
 }
 
+async function returnAccumulatedZeon(option) {
+    if (zeonAcum <= 0) {
+        ChatMessage.create({
+            user: game.user._id,
+            speaker: ChatMessage.getSpeaker({ token: actor }),
+            content: `<b>${token.name}</b> no tiene zeón acumulado para devolver.`
+        });
+        return;
+    }
+
+    let zeonToReturn;
+    if (option === "all") {
+        zeonToReturn = zeonAcum;
+    } else {
+        zeonToReturn = Math.max(0, zeonAcum - 10);
+    }
+
+    let updatedZeonBase = Math.min(zeonBaseTotal, zeonBaseCurr + zeonToReturn);
+
+    await token.actor.update({
+        "system.mystic.zeon.value": updatedZeonBase,
+        "system.mystic.zeon.accumulated": 0
+    });
+
+    let chatNotification = `<b>${token.name}</b> ha devuelto <b>${zeonToReturn}</b> puntos de zeon a su tanque.`;
+    ChatMessage.create({
+        user: game.user._id,
+        speaker: ChatMessage.getSpeaker({ token: actor }),
+        content: chatNotification
+    });
+}
+
 let dialogContent = `
     <div>
         <center><h3>Acumulación de zeón</h3></center>
@@ -116,6 +148,26 @@ let d = new Dialog({
                 let cansancioUsado = parseFloat(html.find('#cansancioUsado').val()) || 0;
                 let cansancioModificacion = parseFloat(html.find('#cansancioModificacion').val()) || 1;
                 updateAcumulation(1, cansancioUsado, cansancioModificacion);
+            }
+        },
+        return: {
+            label: "Devolver Zeon",
+            callback: async () => {
+                new Dialog({
+                    title: "Opciones de Devolución",
+                    content: `<p>Selecciona una opción para devolver el zeón acumulado:</p>`,
+                    buttons: {
+                        all: {
+                            label: "Devolver Todo",
+                            callback: () => returnAccumulatedZeon("all")
+                        },
+                        minusTen: {
+                            label: "Devolver Todo -10",
+                            callback: () => returnAccumulatedZeon("minusTen")
+                        }
+                    },
+                    default: "all"
+                }).render(true);
             }
         }
     },
