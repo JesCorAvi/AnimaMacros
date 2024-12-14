@@ -132,7 +132,6 @@ if (!token) {
       power: "POD",
     };
   
-    // Costes de Ki de la técnica
     const kiCosts = {
       strength: parseInt(technique.system.strength.value) || 0,
       agility: parseInt(technique.system.agility.value) || 0,
@@ -142,10 +141,8 @@ if (!token) {
       power: parseInt(technique.system.power.value) || 0,
     };
   
-    // Ki acumulado actual del personaje
     const kiAccumulation = token.actor.system.domine.kiAccumulation;
   
-    // Verificar si el personaje tiene suficiente Ki en cada acumulación específica
     for (let char of Object.keys(kiCosts)) {
       if (kiCosts[char] > 0 && kiAccumulation[char].accumulated.value < kiCosts[char]) {
         ui.notifications.error(`No tienes suficiente Ki acumulado en ${charNames[char]} para usar esta técnica`);
@@ -153,7 +150,6 @@ if (!token) {
       }
     }
   
-    // Restar el Ki del acumulado actual
     const updates = {};
     for (let char of Object.keys(kiCosts)) {
       if (kiCosts[char] > 0) {
@@ -162,10 +158,8 @@ if (!token) {
       }
     }
   
-    // Actualizar el actor con las nuevas acumulaciones de Ki
     token.actor.update(updates);
   
-    // Enviar un mensaje al chat
     let description = technique.system.description.value || "";
     let chatMessage = `<b>${token.name}</b> ha usado la técnica: <b>${technique.name}</b>`;
     if (description) {

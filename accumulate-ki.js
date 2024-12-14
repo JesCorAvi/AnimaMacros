@@ -180,10 +180,8 @@ async function updateAcumulation(mode, agiChecked, conChecked, dexChecked, strCh
         }
     }
 
-    // Actualiza el contenedor genérico de ki
     await token.actor.update({ "system.domine.kiAccumulation.generic.value": kiContainer });
 
-    // Actualiza la fatiga
     let currentFatigue = token.actor.system.characteristics.secondaries.fatigue.value;
     let newFatigue = currentFatigue - fatigueUsed;
     await token.actor.update({ "system.characteristics.secondaries.fatigue.value": newFatigue });
@@ -227,7 +225,6 @@ function clearAccumulations(mode) {
     let newKi = Math.max(kiContainer + totalAccumulated - kiToRemove, 0);
     token.actor.update({ "system.domine.kiAccumulation.generic.value": newKi });
 
-    // Notificar en el chat
     ChatMessage.create({ 
         content: `<i>${token.name} ha borrado todas sus acumulaciones de ki ${
             mode === 'sin uso' 
