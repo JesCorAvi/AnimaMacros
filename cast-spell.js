@@ -223,7 +223,11 @@ async function updateZeon(mode, spell, spellData, selectedSpellGrade) {
         token.actor.update({ 'system.mystic.zeonMaintained.value': (Number(zeonMant) ?? 0) + Number(mantenianceCost) });
     }
     token.actor.update({ 'system.mystic.zeon.accumulated': (zeonAccum ?? 0) - cost });
-
+    const additionalContent = mode === 1 ? `
+        <p>
+            Costo de mantenimiento: <span class="cost">${mantenianceCost}</span> de zeon</span>.
+        </p>
+    ` : '';
     const content = `
     <div class="spell-chat">
         <h3>${token.actor.name} lanza un hechizo</h3>
@@ -235,6 +239,7 @@ async function updateZeon(mode, spell, spellData, selectedSpellGrade) {
         <p>
             Costo de Zeón: <span class="cost">${cost}</span>.
         </p>
+        ${additionalContent}
         <p>${spell.system.description.value}</p>
         <p>
             <strong>Descripción del grado:</strong>
