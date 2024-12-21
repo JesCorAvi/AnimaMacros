@@ -3,6 +3,7 @@ let zeonBaseTotal = token.actor.system.mystic.zeon.max;
 let zeonBaseCurr = token.actor.system.mystic.zeon.value;
 let zeonAcum = token.actor.system.mystic.zeon.accumulated;
 let fatigueCurr = token.actor.system.characteristics.secondaries.fatigue.value;
+let zeonMant = token.actor.system.mystic.zeonMaintained.value;
 
 if (zeonAcum == null) {
     zeonAcum = 0;
@@ -90,6 +91,49 @@ async function returnAccumulatedZeon(option) {
     });
 }
 
+async function modifyZeonMaintainedDialog() {
+    let content = `
+        <div>
+            <label for="zeonMantainedInput">Valor actual de Zeon Mantenido: </label>
+            <input type="number" id="zeonMantainedInput" name="zeonMantainedInput" value="${zeonMant}">
+        </div>
+    `;
+
+    new Dialog({
+        title: "Modificar Zeon Mantenido",
+        content: content,
+        buttons: {
+            save: {
+                label: "Guardar",
+                callback: async (html) => {
+                    let newZeonMant = parseFloat(html.find('#zeonMantainedInput').val());
+                    if (newZeonMant === null || isNaN(newZeonMant)) {
+                        return;
+                    }
+
+                    let difference = newZeonMant - zeonMant;
+                    await token.actor.update({ "system.mystic.zeonMaintained.value": newZeonMant });
+
+                    let changeDescription = difference > 0 
+                        ? `ha aumentado en <b>${difference}</b>` 
+                        : `ha reducido en <b>${Math.abs(difference)}</b>`;
+
+                    ChatMessage.create({
+                        user: game.user._id,
+                        speaker: ChatMessage.getSpeaker({ token: actor }),
+                        content: `<b>${token.name}</b> ${changeDescription} su Zeon mantenido a un total de <b>${newZeonMant}</b>.`
+                    });
+                }
+            },
+            cancel: {
+                label: "Cancelar",
+                callback: () => {}
+            }
+        },
+        default: "save"
+    }).render(true);
+}
+
 let dialogContent = `
     <div>
         <center><h3>Acumulación de zeón</h3></center>
@@ -101,7 +145,7 @@ let dialogContent = `
         <center>
             <h2>Zeon acumulado: ${zeonAcum}</h2>
             Zeon máximo: ${zeonBaseTotal}, Zeon actual: ${zeonBaseCurr}<br>
-            Fatiga actual: ${fatigueCurr}
+            Fatiga actual: ${fatigueCurr}, Zeon Mantenido: ${zeonMant}
         </center>
     </div>
     <div class="flexrow flex-center">
@@ -168,6 +212,12 @@ let d = new Dialog({
                     },
                     default: "all"
                 }).render(true);
+            }
+        },
+        modify: {
+            label: "Modificar Zeon Mantenido",
+            callback: () => {
+                modifyZeonMaintainedDialog();
             }
         }
     },
