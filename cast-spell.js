@@ -220,7 +220,7 @@ async function updateZeon(mode, spell, spellData, selectedSpellGrade) {
     cost = spellData.zeon.value ?? 0;
     mantenianceCost = spellData.maintenanceCost.value ?? 0;
     if (mode == 1) {
-        token.actor.update({ 'system.mystic.zeonMaintained.value': (Number(zeonMant) ?? 0) + num(mantenianceCost) });
+        token.actor.update({ 'system.mystic.zeonMaintained.value': (Number(zeonMant) ?? 0) + Number(mantenianceCost) });
     }
     token.actor.update({ 'system.mystic.zeon.accumulated': (zeonAccum ?? 0) - cost });
 
