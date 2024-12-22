@@ -104,6 +104,22 @@ async function returnAccumulatedZeon(option) {
   });
 }
 
+async function regenerateZeon() {
+    const zeonRegen = token.actor.system.mystic.zeonRegeneration.final.value;
+    const zeonCurrent = token.actor.system.mystic.zeon.value;
+    const zeonMax = token.actor.system.mystic.zeon.max;
+  
+    const newZeonValue = Math.min(zeonCurrent + zeonRegen, zeonMax);
+  
+    await token.actor.update({ "system.mystic.zeon.value": newZeonValue });
+  
+    ChatMessage.create({
+      user: game.user._id,
+      speaker: ChatMessage.getSpeaker({ token: actor }),
+      content: `<b>${token.name}</b> ha regenerado <b>${zeonRegen}</b> puntos de Zeón. Zeón actual: <b>${newZeonValue}</b>.`,
+    });
+  }
+
 async function modifyZeonMaintainedDialog() {
   let maintainedPerTurn = token.actor.system.mystic.selectedSpells || [];
   let maintainedDaily = token.actor.system.mystic.spellMaintenances || [];
@@ -172,29 +188,32 @@ async function modifyZeonMaintainedDialog() {
         content: content,
         buttons: {}, 
         render: (html) => {
-          html.find(".delete-spell-per-turn").on("click", async (event) => {
-            let spellId = event.currentTarget.dataset.spellId;
-            spellCost = maintainedPerTurn.find((spell) => spell._id === spellId).system.cost.value;
-            spellName = maintainedPerTurn.find((spell) => spell._id === spellId).name;
-            maintainedPerTurn = maintainedPerTurn.filter(
-              (spell) => spell._id !== spellId
-            );
-            token.actor.update({
-              "system.mystic.zeonMaintained.value":
-                (Number(zeonMant) ?? 0) - Number(spellCost),
+            html.find(".delete-spell-per-turn").on("click", async (event) => {
+                let spellId = event.currentTarget.dataset.spellId;
+                let spell = maintainedPerTurn.find((spell) => spell._id === spellId);
+            
+                if (!spell) return;
+            
+                let spellCost = spell.system.cost.value;
+                let spellName = spell.name;
+            
+                maintainedPerTurn = maintainedPerTurn.filter((spell) => spell._id !== spellId);
+            
+                await token.actor.update({
+                    "system.mystic.zeonMaintained.value": (Number(zeonMant) ?? 0) - Number(spellCost),
+                    "system.mystic.selectedSpells": maintainedPerTurn,
+                });
+            
+                html.find(`#spell-${spellId}`).remove();
+            
+                ChatMessage.create({
+                    user: game.user._id,
+                    speaker: ChatMessage.getSpeaker({ token: actor }),
+                    content: `<b>${token.name}</b> ha dejado de mantener el hechizo <b><span style="font-weight: bold; color: #6b4423; font-style: italic;">${spellName}</span></b>.`,
+                });
+            
+                zeonMant -= spellCost;
             });
-            await token.actor.update({
-              "system.mystic.selectedSpells": maintainedPerTurn,
-            });
-            html.find(`#spell-${spellId}`).remove();
-      
-            ChatMessage.create({
-              user: game.user._id,
-              speaker: ChatMessage.getSpeaker({ token: actor }),
-              content: `<b>${token.name}</b> ha dejado de mantener el hechizo <b><span style="font-weight: bold; color: #6b4423; font-style: italic;">${spellName}</span></b>.`,
-            });
-          });
-      
           html.find(".delete-spell-daily").on("click", async (event) => {
             let spellId = event.currentTarget.dataset.spellId;
             spellName = maintainedDaily.find((spell) => spell._id === spellId).name;
@@ -257,65 +276,71 @@ let dialogContent = `
     <br>
 `;
 
-let stayOpen = false;
 let d = new Dialog({
-  title: "Zeon Accumulation",
-  content: dialogContent,
-  buttons: {
-    done: {
-      label: "Acum. Plena",
-      callback: (html) => {
-        stayOpen = false;
-        let cansancioUsado =
-          parseFloat(html.find("#cansancioUsado").val()) || 0;
-        let cansancioModificacion =
-          parseFloat(html.find("#cansancioModificacion").val()) || 1;
-        updateAcumulation(0, cansancioUsado, cansancioModificacion);
+    title: "Zeón Accumulation",
+    content: dialogContent,
+    buttons: {
+      regenerate: {
+        label: "Regenerar Zeón",
+        callback: () => {
+          regenerateZeon();
+        },
       },
-    },
-    show: {
-      label: "Acum. Parcial",
-      callback: (html) => {
-        stayOpen = false;
-        let cansancioUsado =
-          parseFloat(html.find("#cansancioUsado").val()) || 0;
-        let cansancioModificacion =
-          parseFloat(html.find("#cansancioModificacion").val()) || 1;
-        updateAcumulation(1, cansancioUsado, cansancioModificacion);
+      done: {
+        label: "Acum. Plena",
+        callback: (html) => {
+          stayOpen = false;
+          let cansancioUsado =
+            parseFloat(html.find("#cansancioUsado").val()) || 0;
+          let cansancioModificacion =
+            parseFloat(html.find("#cansancioModificacion").val()) || 1;
+          updateAcumulation(0, cansancioUsado, cansancioModificacion);
+        },
       },
-    },
-    return: {
-      label: "Devolver Zeon",
-      callback: async () => {
-        new Dialog({
-          title: "Opciones de Devolución",
-          content: `<p>Selecciona una opción para devolver el zeón acumulado:</p>`,
-          buttons: {
-            all: {
-              label: "Devolver Todo",
-              callback: () => returnAccumulatedZeon("all"),
+      show: {
+        label: "Acum. Parcial",
+        callback: (html) => {
+          stayOpen = false;
+          let cansancioUsado =
+            parseFloat(html.find("#cansancioUsado").val()) || 0;
+          let cansancioModificacion =
+            parseFloat(html.find("#cansancioModificacion").val()) || 1;
+          updateAcumulation(1, cansancioUsado, cansancioModificacion);
+        },
+      },
+      return: {
+        label: "Devolver Zeón",
+        callback: async () => {
+          new Dialog({
+            title: "Opciones de Devolución",
+            content: `<p>Selecciona una opción para devolver el zeón acumulado:</p>`,
+            buttons: {
+              all: {
+                label: "Devolver Todo",
+                callback: () => returnAccumulatedZeon("all"),
+              },
+              minusTen: {
+                label: "Devolver Todo -10",
+                callback: () => returnAccumulatedZeon("minusTen"),
+              },
             },
-            minusTen: {
-              label: "Devolver Todo -10",
-              callback: () => returnAccumulatedZeon("minusTen"),
-            },
-          },
-          default: "all",
-        }).render(true);
+            default: "all",
+          }).render(true);
+        },
+      },
+      modify: {
+        label: "Hechizos Mantenidos",
+        callback: () => {
+          modifyZeonMaintainedDialog();
+        },
       },
     },
-    modify: {
-      label: "Hechizos Mantenidos",
-      callback: () => {
-        modifyZeonMaintainedDialog();
-      },
+    default: "done",
+    close: () => {
+      if (stayOpen) {
+        stayOpen = false;
+        d.render(true);
+      }
     },
-  },
-  default: "done",
-  close: () => {
-    if (stayOpen) {
-      stayOpen = false;
-      d.render(true);
-    }
-  },
-}).render(true);
+  }).render(true);
+  
