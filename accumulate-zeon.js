@@ -92,47 +92,81 @@ async function returnAccumulatedZeon(option) {
 }
 
 async function modifyZeonMaintainedDialog() {
+    let maintainedPerTurn = token.actor.system.mystic.selectedSpells || [];
+    let maintainedDaily = token.actor.system.mystic.spellMaintenances || [];
+
+    let spellListPerTurn = maintainedPerTurn.map(spell => `
+        <li id="spell-${spell._id}">
+            <b>${spell.name}</b> - Coste: ${spell.system.cost.value} Zeón/turno
+            <button data-spell-id="${spell._id}" class="delete-spell-per-turn">Eliminar</button>
+        </li>
+    `).join("");
+
+    let spellListDaily = maintainedDaily.map(spell => `
+        <li id="spell-${spell._id}">
+            <b>${spell.name}</b> - Coste: ${spell.system.cost.value} Zeón/día
+            <button data-spell-id="${spell._id}" class="delete-spell-daily">Eliminar</button>
+        </li>
+    `).join("");
+
     let content = `
         <div>
-            <label for="zeonMantainedInput">Valor actual de Zeon Mantenido: </label>
-            <input type="number" id="zeonMantainedInput" name="zeonMantainedInput" value="${zeonMant}">
+            <h3>Hechizos mantenidos por turno:</h3>
+            <ul id="list-per-turn">${spellListPerTurn}</ul>
+        </div>
+        <div>
+            <h3>Hechizos mantenidos diarios:</h3>
+            <ul id="list-daily">${spellListDaily}</ul>
         </div>
     `;
 
-    new Dialog({
+    let dialog = new Dialog({
         title: "Modificar Zeon Mantenido",
         content: content,
         buttons: {
-            save: {
-                label: "Guardar",
-                callback: async (html) => {
-                    let newZeonMant = parseFloat(html.find('#zeonMantainedInput').val());
-                    if (newZeonMant === null || isNaN(newZeonMant)) {
-                        return;
-                    }
-
-                    let difference = newZeonMant - zeonMant;
-                    await token.actor.update({ "system.mystic.zeonMaintained.value": newZeonMant });
-
-                    let changeDescription = difference > 0 
-                        ? `ha aumentado en <b>${difference}</b>` 
-                        : `ha reducido en <b>${Math.abs(difference)}</b>`;
-
-                    ChatMessage.create({
-                        user: game.user._id,
-                        speaker: ChatMessage.getSpeaker({ token: actor }),
-                        content: `<b>${token.name}</b> ${changeDescription} su Zeon mantenido a un total de <b>${newZeonMant}</b>.`
-                    });
-                }
-            },
+            
             cancel: {
                 label: "Cancelar",
                 callback: () => {}
             }
         },
-        default: "save"
-    }).render(true);
+        render: (html) => {
+            html.find('.delete-spell-per-turn').on('click', async (event) => {
+                let spellId = event.currentTarget.dataset.spellId;
+                spellCost = maintainedPerTurn.find(spell => spell._id === spellId).system.cost.value;
+                maintainedPerTurn = maintainedPerTurn.filter(spell => spell._id !== spellId);
+                token.actor.update({ 'system.mystic.zeonMaintained.value': (Number(zeonMant) ?? 0) - Number(spellCost) });
+                await token.actor.update({ "system.mystic.selectedSpells": maintainedPerTurn });
+                html.find(`#spell-${spellId}`).remove();
+
+                ChatMessage.create({
+                    user: game.user._id,
+                    speaker: ChatMessage.getSpeaker({ token: actor }),
+                    content: `<b>${token.name}</b> ha eliminado el hechizo de mantenimiento por turno.`
+                });
+            });
+
+            html.find('.delete-spell-daily').on('click', async (event) => {
+                let spellId = event.currentTarget.dataset.spellId;
+                console.log(spellId);
+
+                maintainedDaily = maintainedDaily.filter(spell => spell._id !== spellId);
+                console.log(maintainedDaily);
+                await token.actor.update({ "system.mystic.spellMaintenances": maintainedDaily });
+                html.find(`#spell-${spellId}`).remove();
+
+                ChatMessage.create({
+                    user: game.user._id,
+                    speaker: ChatMessage.getSpeaker({ token: actor }),
+                    content: `<b>${token.name}</b> ha eliminado el hechizo de mantenimiento diario.`
+                });
+            });
+        }
+    });
+
+    dialog.render(true);
 }
+
 
 let dialogContent = `
     <div>
@@ -215,7 +249,7 @@ let d = new Dialog({
             }
         },
         modify: {
-            label: "Modificar Zeon Mantenido",
+            label: "Hechizos Mantenidos",
             callback: () => {
                 modifyZeonMaintainedDialog();
             }
