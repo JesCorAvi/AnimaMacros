@@ -6,6 +6,16 @@ let zeonMant = token.actor.system.mystic.zeonMaintained.value;
 let stayPreviewOpen = false;
 let stayOpen = false;
 
+const nanoid = (t = 21) => {
+    let e = "";
+    const r = crypto.getRandomValues(new Uint8Array(t));
+    for (; t--; ) {
+      const n = 63 & r[t];
+      e += n < 36 ? n.toString(36) : n < 62 ? (n - 26).toString(36).toUpperCase() : n < 63 ? "_" : "-";
+    }
+    return e;
+};
+
 
 function optionsDialog() {
     let spellOptions = '';
@@ -215,17 +225,34 @@ if (!document.getElementById('spell-chat-styles')) {
 async function updateZeon(mode, spell, spellData, selectedSpellGrade) {
     const parseRegex = /(\d+ - ){0,1}(.+)/;
     const parsedName = spell.name.match(parseRegex)[2];
-    let cost;
-    let mantenianceCost;
-    cost = spellData.zeon.value ?? 0;
-    mantenianceCost = spellData.maintenanceCost.value ?? 0;
+    let cost = spellData.zeon.value ?? 0;
+    let maintainedCost = spellData.maintenanceCost.value ?? 0;
     if (mode == 1) {
-        token.actor.update({ 'system.mystic.zeonMaintained.value': (Number(zeonMant) ?? 0) + Number(mantenianceCost) });
+        if (!spell.system.hasDailyMaintenance.value){
+            let selectedSpells = token.actor.system.mystic.selectedSpells || [];
+            const newSpell = {
+                _id: nanoid(),
+                name: spell.name,
+                system :{cost: {value : maintainedCost}},
+            };
+            selectedSpells.push(newSpell);
+            await token.actor.update({ 'system.mystic.selectedSpells': selectedSpells });  
+            token.actor.update({ 'system.mystic.zeonMaintained.value': (Number(zeonMant) ?? 0) + Number(maintainedCost) });
+        }else{
+            let dailySpells = token.actor.system.mystic.spellMaintenances || [];
+            const newSpell = {
+                _id: nanoid(),
+                name: spell.name,
+                system :{cost: {value : maintainedCost}},
+            };
+            dailySpells.push(newSpell);
+            await token.actor.update({ 'system.mystic.spellMaintenances': dailySpells });    
+        }
     }
     token.actor.update({ 'system.mystic.zeon.accumulated': (zeonAccum ?? 0) - cost });
     const additionalContent = mode === 1 ? `
         <p>
-            Costo de mantenimiento: <span class="cost">${mantenianceCost}</span> de zeon</span>.
+            Costo de mantenimiento: <span class="cost">${maintainedCost}</span> de zeon</span>.
         </p>
     ` : '';
     const content = `
