@@ -286,26 +286,26 @@ let d = new Dialog({
           regenerateZeon();
         },
       },
-      done: {
-        label: "Acum. Plena",
+      accumulate: {
+        label: "Acumular",
         callback: (html) => {
-          stayOpen = false;
-          let cansancioUsado =
-            parseFloat(html.find("#cansancioUsado").val()) || 0;
-          let cansancioModificacion =
-            parseFloat(html.find("#cansancioModificacion").val()) || 1;
-          updateAcumulation(0, cansancioUsado, cansancioModificacion);
-        },
-      },
-      show: {
-        label: "Acum. Parcial",
-        callback: (html) => {
-          stayOpen = false;
-          let cansancioUsado =
-            parseFloat(html.find("#cansancioUsado").val()) || 0;
-          let cansancioModificacion =
-            parseFloat(html.find("#cansancioModificacion").val()) || 1;
-          updateAcumulation(1, cansancioUsado, cansancioModificacion);
+          let cansancioUsado = parseFloat(html.find("#cansancioUsado").val()) || 0;
+          let cansancioModificacion = parseFloat(html.find("#cansancioModificacion").val()) || 1;
+          new Dialog({
+            title: "Tipo de Acumulación",
+            content: "<p>¿Qué tipo de acumulación deseas realizar?</p>",
+            buttons: {
+              full: {
+                label: "Acumulación Plena",
+                callback: () => updateAcumulation(0, cansancioUsado, cansancioModificacion)
+              },
+              partial: {
+                label: "Acumulación Parcial",
+                callback: () => updateAcumulation(1, cansancioUsado, cansancioModificacion)
+              }
+            },
+            default: "full"
+          }).render(true);
         },
       },
       return: {
@@ -313,7 +313,7 @@ let d = new Dialog({
         callback: async () => {
           new Dialog({
             title: "Opciones de Devolución",
-            content: `<p>Selecciona una opción para devolver el zeón acumulado:</p>`,
+            content: "<p>Selecciona una opción para devolver el zeón acumulado:</p>",
             buttons: {
               all: {
                 label: "Devolver Todo",
@@ -335,7 +335,7 @@ let d = new Dialog({
         },
       },
     },
-    default: "done",
+    default: "accumulate",
     close: () => {
       if (stayOpen) {
         stayOpen = false;
@@ -343,4 +343,3 @@ let d = new Dialog({
       }
     },
   }).render(true);
-  
