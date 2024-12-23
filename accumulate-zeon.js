@@ -5,6 +5,8 @@ let zeonAcum = token.actor.system.mystic.zeon.accumulated;
 let fatigueCurr = token.actor.system.characteristics.secondaries.fatigue.value;
 let zeonMant = token.actor.system.mystic.zeonMaintained.value;
 
+let stayOpen = false;
+
 if (zeonAcum == null) {
   zeonAcum = 0;
 }
