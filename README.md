@@ -1,4 +1,4 @@
-# Cambios en los scripts y nuevas funcionalidades
+# Macros FoundryVTT Anima Beyond Fantasy
 
 He implementado cambios en los scripts, añadiendo opciones útiles basadas en mi experiencia en partidas. A continuación, detallo los cambios realizados:
 
@@ -44,7 +44,6 @@ He implementado cambios en los scripts, añadiendo opciones útiles basadas en m
   - Elimina el hechizo mantenido del apartado correspondiente y del contador de "mantenidos" si era por turno.
 
 
-# Macros FoundryVTT Anima Beyond Fantasy
 
 This repository contains custom macros designed for the Anima Beyond Fantasy in FoundryVTT. These macros automate various aspects of character management, such as Ki accumulation, Zeon accumulation, spell casting, and technique usage...
 
