@@ -40,8 +40,7 @@ He implementado cambios en los scripts, añadiendo opciones útiles basadas en m
   - Aparece una ventana para elegir si acumular de forma plena o no.
 - **Control de hechizos mantenidos**: 
   - Muestra los hechizos mantenidos (diarios y por turno).
-  - Permite eliminarlos fácilmente, generando un mensaje en el chat indicando qué personaje dejó de mantener qué hechizo.
-  - Elimina el hechizo mantenido del apartado correspondiente y del contador de "mantenidos" si era por turno.
+  - Permite eliminarlos fácilmente, generando un mensaje en el chat indicando qué personaje dejó de mantener qué hechizo. Ademas, borra el hechizo mantenido del apartado correspondiente y del contador de "mantenidos" si era por turno.
 
 
 
