@@ -1,6 +1,6 @@
 # Macros FoundryVTT Anima Beyond Fantasy
 
-He implementado cambios en los scripts, añadiendo opciones útiles basadas en mi experiencia en partidas. A continuación, detallo los cambios realizados:
+EN este fork he implementado cambios en los scripts, añadiendo opciones útiles basadas en mi experiencia en partidas. A continuación, detallo los cambios realizados:
 
 ## Cambios en la acumulación y uso de Ki
 
