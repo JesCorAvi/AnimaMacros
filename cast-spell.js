@@ -200,51 +200,6 @@ function previewDialog(selectedSpellId, selectedSpellGrade) {
   return d;
 }
 
-if (!document.getElementById("spell-chat-styles")) {
-  const style = document.createElement("style");
-  style.id = "spell-chat-styles";
-  style.innerHTML = `
-        .spell-chat {
-            border: 2px solid #8b0000; /* Rojo oscuro */
-            border-radius: 10px;
-            background-color: #f8f1e5; /* Color pergamino */
-            padding: 15px;
-            margin-top: 15px;
-            font-family: 'Georgia', serif; /* Tipografía clásica */
-            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3); /* Sombra para un efecto elevado */
-        }
-        .spell-chat h3 {
-            margin: 0 0 15px 0;
-            text-align: center;
-            color: #8b4513; /* Marrón oscuro */
-            text-transform: uppercase;
-            font-weight: bold;
-            font-size: 18px;
-            border-bottom: 2px solid #8b0000; /* Subrayado rojo oscuro */
-            padding-bottom: 5px;
-        }
-        .spell-chat p {
-            margin: 8px 0;
-            color: #4b3621; /* Marrón oscuro para texto */
-            line-height: 1.5;
-        }
-        .spell-chat .cost {
-            font-weight: bold;
-            color: #8b0000; /* Rojo oscuro para costos */
-        }
-        .spell-chat .spell-name {
-            font-weight: bold;
-            color: #6b4423; /* Marrón medio */
-            font-style: italic;
-        }
-        .spell-chat .spell-grade {
-            color: #a0522d; /* Marrón rojizo */
-            font-weight: bold;
-        }
-    `;
-  document.head.appendChild(style);
-}
-
 async function updateZeon(mode, spell, spellData, selectedSpellGrade) {
   const parseRegex = /(\d+ - ){0,1}(.+)/;
   const parsedName = spell.name.match(parseRegex)[2];
@@ -291,15 +246,17 @@ async function updateZeon(mode, spell, spellData, selectedSpellGrade) {
     `
       : "";
   const content = `
-    <div class="spell-chat">
-        <h3>${token.actor.name} lanza un hechizo</h3>
+ <div style="border: 2px solid #8b0000; border-radius: 10px; background-color: #f8f1e5; padding: 15px; margin-top: 15px; font-family: 'Georgia', serif; box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);">
+        <h3 style="text-align: center; color: #8b4513; text-transform: uppercase; font-weight: bold; font-size: 18px; border-bottom: 2px solid #8b0000; padding-bottom: 5px;">${
+          token.actor.name
+        } lanza un hechizo</h3>
         <p>
-            <span class="spell-name">${parsedName}</span> ha sido 
+            <span style="font-weight: bold; color: #6b4423; font-style: italic;">${parsedName}</span> ha sido 
             ${mode == 0 ? "utilizado" : "mantenido"} en el grado 
-            <span class="spell-grade">${selectedSpellGrade}</span>.
+            <span style="color: #a0522d; font-weight: bold;">${selectedSpellGrade}</span>.
         </p>
         <p>
-            Costo de Zeón: <span class="cost">${cost}</span>.
+            Costo de Zeón: <span style="font-weight: bold; color: #8b0000;">${cost}</span>.
         </p>
         ${additionalContent}
         <p>${spell.system.description.value}</p>
