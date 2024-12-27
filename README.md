@@ -19,10 +19,10 @@ En este fork he implementado cambios en los scripts, añadiendo opciones útiles
 ## Cambios en el script de lanzamiento de hechizos
 
 - **Hechizos mantenidos**: 
-  - Se añaden al apartado correspondiente del token:
+  -Ahora al ser lanzados como mantenidos, se añaden al apartado correspondiente del token:
     - **Diarios**: Al apartado de "hechizos diarios".
-    - **Por turno**: Al apartado de "hechizos seleccionados" (utilizado por falta de otro espacio disponible).
-  - Se incrementa el contador de "mantenidos".
+    - **Por turno**: Al apartado de "hechizos seleccionados" (utilizo este por falta de otro apartado especifico).
+  - Se incrementa el contador de "mantenidos" si es que el hechizo era por turno.
 - **Detalles en el chat al lanzar hechizos**: 
   - Se muestra la siguiente información:
     - Nombre del hechizo.
@@ -40,7 +40,7 @@ En este fork he implementado cambios en los scripts, añadiendo opciones útiles
   - Aparece una ventana para elegir si acumular de forma plena o no.
 - **Control de hechizos mantenidos**: 
   - Muestra los hechizos mantenidos (diarios y por turno).
-  - Permite eliminarlos fácilmente, generando un mensaje en el chat indicando qué personaje dejó de mantener qué hechizo. Ademas, borra el hechizo mantenido del apartado correspondiente y del contador de "mantenidos" si era por turno.
+  - Permite dejar de mantenerlos fácilmente, generando un mensaje en el chat indicando qué personaje dejó de mantener qué hechizo. Ademas, borra el hechizo mantenido del apartado correspondiente y del contador de "mantenidos" si era por turno.
 
 
 
