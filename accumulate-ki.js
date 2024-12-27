@@ -196,12 +196,10 @@ function clearAccumulations(mode) {
     const attributes = ['agility', 'constitution', 'dexterity', 'strength', 'power', 'willPower'];
     let totalAccumulated = 0;
   
-    // Sumar toda la acumulación y resetear los valores
     attributes.forEach(attr => {
         const accumulatedValue = tokenAcum[attr].accumulated.value;
         totalAccumulated += accumulatedValue;
 
-        // Actualizar acumulación del atributo a 0
         token.actor.update({ [`system.domine.kiAccumulation.${attr}.accumulated.value`]: 0 });
     });
 
@@ -209,7 +207,6 @@ function clearAccumulations(mode) {
     let kiToRemove = 0;
 
     if (mode === 'sin uso') {
-        // Aplicar penalizaciones según la acumulación total
         if (totalAccumulated >= 120) {
             kiToRemove = Math.floor(totalAccumulated / 2);
         } else if (totalAccumulated >= 80) {
@@ -221,7 +218,6 @@ function clearAccumulations(mode) {
         }
     }
 
-    // Sumar la acumulación al contenedor genérico y restar penalización si aplica
     let newKi = Math.max(kiContainer + totalAccumulated - kiToRemove, 0);
     token.actor.update({ "system.domine.kiAccumulation.generic.value": newKi });
 

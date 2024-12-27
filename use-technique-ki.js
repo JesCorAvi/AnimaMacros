@@ -151,12 +151,21 @@ if (!token) {
     }
   
     const updates = {};
+    let kiReserve = kiAccumulation.generic.value || 0;
+  
     for (let char of Object.keys(kiCosts)) {
-      if (kiCosts[char] > 0) {
-        updates[`system.domine.kiAccumulation.${char}.accumulated.value`] =
-          kiAccumulation[char].accumulated.value - kiCosts[char];
+      const accumulated = kiAccumulation[char].accumulated.value;
+      const cost = kiCosts[char];
+  
+      if (cost > 0) {
+        updates[`system.domine.kiAccumulation.${char}.accumulated.value`] = accumulated - cost;
       }
+  
+      kiReserve += accumulated - (cost > 0 ? cost : 0);
+      updates[`system.domine.kiAccumulation.${char}.accumulated.value`] = 0;
     }
+  
+    updates["system.domine.kiAccumulation.generic.value"] = kiReserve;
   
     token.actor.update(updates);
   
@@ -168,3 +177,4 @@ if (!token) {
   
     ChatMessage.create({ content: chatMessage });
   }
+  
