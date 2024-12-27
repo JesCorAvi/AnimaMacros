@@ -155,8 +155,7 @@ function previewDialog(selectedSpellId, selectedSpellGrade) {
     title: "Vista previa",
     content,
     buttons:
-      ((zeonAccum ?? 0) < spellData.zeon.value &&
-        (zeonAccum ?? 0) < Number(spellData.maintenanceCost.value)) ||
+      (zeonAccum ?? 0) < Number(spellData.zeon.value) ||
       tokenAttrs.intelligence.value < spellData.intRequired.value
         ? {
             confirm: {
@@ -172,7 +171,7 @@ function previewDialog(selectedSpellId, selectedSpellGrade) {
                 stayPreviewOpen = false;
                 updateZeon(0, spell, spellData, selectedSpellGrade);
               },
-              disabled: (zeonAccum ?? 0) < spellData.zeon.value,
+              disabled: (zeonAccum ?? 0) < Number(spellData.zeon.value),
             },
             maintain: {
               label:
@@ -186,7 +185,7 @@ function previewDialog(selectedSpellId, selectedSpellGrade) {
               },
               disabled:
                 isNaN(Number(spellData.maintenanceCost.value)) ||
-                (zeonAccum ?? 0) < Number(spellData.maintenanceCost.value) ||
+                (zeonAccum ?? 0) < Number(spellData.zeon.value) ||
                 Number(spellData.maintenanceCost.value) == 0,
             },
           },
