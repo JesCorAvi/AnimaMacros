@@ -89,6 +89,7 @@ game.messages.forEach(message => {
 rolls.sort((a, b) => b.totalRoll - a.totalRoll);
 
 // Mostrar las mejores tiradas
+// Mostrar las mejores tiradas
 if (rolls.length > 0) {
   const bestRollsMessage = rolls.slice(0, 3).map((roll, index) => {
     let medalStyle = "";
@@ -110,8 +111,17 @@ if (rolls.length > 0) {
       : "";
   
     return `
-      <li style="padding: 10px; font-size: 18px; border-radius: 5px; margin-bottom: 5px; ${medalStyle}">
-        <strong>${index + 1}. ${roll.user}</strong><br>
+      <li style="
+        padding: 15px; 
+        border-radius: 10px; 
+        margin-bottom: 10px; 
+        border: 2px solid #8b4513; 
+        ${medalStyle}
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 20px;
+        text-align: center;
+        text-shadow: 1px 1px 2px #8b4513;">
+        <strong style="font-size: 24px;">${index + 1}. ${roll.user}</strong><br>
         ${flavorLine}
         <em>Tiradas: ${roll.individualRolls.join(" + ")}</em><br>
         <strong>Suma Total: ${roll.totalRoll}</strong>
@@ -120,16 +130,18 @@ if (rolls.length > 0) {
   ChatMessage.create({
     content: `
       <div style="
-        background-color: #e8f5e9;
-        border: 3px solid #4caf50;
-        border-radius: 8px;
-        padding: 15px;
-        font-family: 'Arial', sans-serif;
-        font-size: 18px;
-        color: #1b5e20;
-      ">
-        <h3 style="text-align: center; font-size: 24px; margin-bottom: 10px;">Mejores Tiradas de la sesión</h3>
-        <ul style="list-style-type: none; padding-left: 0;">
+        background-color: #f8f0d9;
+        border: 5px solid #8b4513;
+        border-radius: 10px;
+        padding: 20px;
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 20px;
+        color: #4b2e02;
+        text-shadow: 1px 1px 2px #8b4513;
+        text-align: center;
+        line-height: 1.5;">
+        <h3 style="font-size: 32px; text-transform: uppercase; margin-bottom: 20px;">Mejores Tiradas de la Sesión</h3>
+        <ul style="list-style-type: none; padding-left: 0; margin: 0;">
           ${bestRollsMessage}
         </ul>
       </div>
@@ -138,11 +150,23 @@ if (rolls.length > 0) {
   });
 } else {
   ChatMessage.create({
-    content: `<p>No se encontraron tiradas en las últimas 24 horas.</p>`,
+    content: `
+      <div style="
+        background-color: #f8f0d9;
+        border: 5px solid #8b4513;
+        border-radius: 10px;
+        padding: 20px;
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 20px;
+        color: #4b2e02;
+        text-shadow: 1px 1px 2px #8b4513;
+        text-align: center;">
+        <p>No se encontraron tiradas en las últimas 24 horas.</p>
+      </div>
+    `,
     whisper: []
   });
 }
-
   // Ejecutar la macro final
   game.macros.getName("final2").execute();
 
