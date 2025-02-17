@@ -51,7 +51,28 @@ const thresholds = [
 const bonusHO = thresholds.find(t => currentEnemies >= t.min)?.bonus || 0;
 const nuevoHO = masaData.hoBase + bonusHO;
 
-// Actualizar descripción
+// Crear mensaje para el chat
+const content = `
+  <div class="masa-update">
+    <h2>Información de Masa: ${canvas.tokens.controlled[0].name} </h2>
+    <div class="grid grid-3col">
+      <div class="flexcol">
+
+      <div class="flexcol">
+        <label>Unidades Activas</label>
+        <div class="value">${currentEnemies} <small>/ ${numOriginal}</small></div>
+      </div>
+    </div>
+  </div>
+`;
+
+// Enviar mensaje al chat
+ChatMessage.create({
+  content: content,
+  speaker: ChatMessage.getSpeaker({ actor: actor })
+});
+
+// Actualizar actor
 await actor.update({
   "system.combat.attack.base.value": nuevoHO,
   "system.combat.attack.final.value": nuevoHO,
@@ -66,4 +87,5 @@ await actor.update({
   "flags.masa-enemigos.currentEnemies": currentEnemies
 });
 
-ui.notifications.info("Masa actualizada");
+// Notificación flotante
+ui.notifications.info(`Masa actualizada: ${currentEnemies} enemigos restantes`);
