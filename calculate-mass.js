@@ -4,8 +4,6 @@ if (!selectedToken) {
   return;
 }
 
-//Funciona seleccionando un token tomando sus caracteristicas.
-
 const actor = selectedToken.actor;
 if (!actor) {
   ui.notifications.error("¡El token seleccionado no tiene un actor asociado!");
@@ -33,7 +31,10 @@ new Dialog({
 
         const avgPV = actor.system.characteristics.secondaries.lifePoints.value; // Puntos de Vida
         const avgHO = actor.system.combat.attack.final.value; // Habilidad Ofensiva
-        const avgDano = actor.system.combat.weapons[0]?.system.damage.final.value || 0; // Daño (primera arma)
+
+        // Encuentra la primera arma equipada
+        const equippedWeapon = actor.items.find(item => item.type === 'weapon' && item.system.equipped.value);
+        const avgDano = equippedWeapon ? equippedWeapon.system.damage.final.value : 0; // Daño de la primera arma equipada
 
         let totalPV;
         if (!dañoAcumulativo) {
