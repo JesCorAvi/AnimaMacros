@@ -31,15 +31,14 @@ new Dialog({
         const avgPV = actor.system.characteristics.secondaries.lifePoints.value;
         const avgHO = actor.system.combat.attack.final.value;
 
-        // Cálculo de PV y tipo
         let totalPV, calculationData = {};
-        let tipoMasa = ""; // <---- Declaración corregida
+        let tipoMasa = ""; 
         const equippedWeapon = actor.items.find(
           (item) => item.type === "weapon" && item.system.equipped.value
         );
         const avgDano = equippedWeapon
           ? equippedWeapon.system.damage.final.value
-          : 0; // Daño de la primera arma equipada
+          : 0; 
 
         if (!dañoAcumulativo) {
           const pvPorUnidad = Math.floor(avgPV / 50) * 50;
@@ -63,7 +62,6 @@ new Dialog({
           calculationData = { tipo: "acumulacion", basePV };
         }
 
-        // Cálculo de HO
         const thresholds = [
           { min: 100, bonus: 150 }, { min: 50, bonus: 130 },
           { min: 25, bonus: 110 }, { min: 15, bonus: 90 },
@@ -74,11 +72,9 @@ new Dialog({
         const HO = avgHO + bonusHO;
         const danoMass = Math.floor(avgDano * 0.5);
 
-        // Crear nuevo actor
         const newActorData = duplicate(actor.toObject());
         newActorData.name = `${actor.name} (Masa)`;
         
-        // Actualizar stats y descripción
         newActorData.system.characteristics.secondaries.lifePoints = {
           value: totalPV,
           max: totalPV
@@ -100,7 +96,6 @@ new Dialog({
         newActorData.system.general.modifiers.extraDamage.value = danoMass;
 
 
-        // Flags para recálculo
         newActorData.flags = {
           ...newActorData.flags,
           "masa-enemigos": {
@@ -112,7 +107,6 @@ new Dialog({
           }
         };
 
-        // Crear token
         const newActor = await Actor.create(newActorData);
         const tokenData = duplicate(selectedToken.data);
         tokenData.actorId = newActor.id;

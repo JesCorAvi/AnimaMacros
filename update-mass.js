@@ -16,13 +16,11 @@ if (!masaData || masaData.version !== 2) {
   return;
 }
 
-// Datos clave
 const currentHP = actor.system.characteristics.secondaries.lifePoints.value;
 const totalPV = masaData.totalOriginal;
 const numOriginal = masaData.numOriginal;
 const tipo = masaData.tipo;
 
-// Calcular enemigos restantes
 let currentEnemies = 0;
 if (tipo === "acumulacion") {
   const basePV = masaData.basePV;
@@ -41,7 +39,6 @@ if (tipo === "acumulacion") {
 }
 currentEnemies = Math.max(0, Math.min(currentEnemies, numOriginal));
 
-// Actualizar HO
 const thresholds = [
   { min: 100, bonus: 150 }, { min: 50, bonus: 130 },
   { min: 25, bonus: 110 }, { min: 15, bonus: 90 },
@@ -51,7 +48,6 @@ const thresholds = [
 const bonusHO = thresholds.find(t => currentEnemies >= t.min)?.bonus || 0;
 const nuevoHO = masaData.hoBase + bonusHO;
 
-// Crear mensaje para el chat
 const content = `
   <div class="masa-update">
     <h2>Información de Masa: ${canvas.tokens.controlled[0].name} </h2>
@@ -66,13 +62,11 @@ const content = `
   </div>
 `;
 
-// Enviar mensaje al chat
 ChatMessage.create({
   content: content,
   speaker: ChatMessage.getSpeaker({ actor: actor })
 });
 
-// Actualizar actor
 await actor.update({
   "system.combat.attack.base.value": nuevoHO,
   "system.combat.attack.final.value": nuevoHO,
@@ -87,5 +81,4 @@ await actor.update({
   "flags.masa-enemigos.currentEnemies": currentEnemies
 });
 
-// Notificación flotante
 ui.notifications.info(`Masa actualizada: ${currentEnemies} enemigos restantes`);
