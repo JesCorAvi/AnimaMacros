@@ -25,7 +25,7 @@ let currentEnemies = 0;
 if (tipo === "acumulacion") {
   const basePV = masaData.basePV;
   if (currentHP < basePV) {
-    currentEnemies = 0;
+    currentEnemies = 1;
   } else {
     currentEnemies = 1 + Math.ceil((currentHP - basePV) / (basePV / 2));
     if (numOriginal > 50 && currentEnemies > 50) {
