@@ -15,7 +15,7 @@ const defenseType = actor.system.general.settings.defenseType.value;
 const dañoAcumulativo = defenseType === "resistance";
 
 new Dialog({
-  title: "Modificar Masa de Enemigos",
+  title: "Crear Masa de Enemigos",
   content: `
     <form>
       <div class="form-group">
@@ -25,8 +25,8 @@ new Dialog({
     </form>
   `,
   buttons: {
-    modificar: {
-      label: "Modificar",
+    Crear: {
+      label: "Crear",
       callback: async (html) => {
         const numEnemies = parseInt(html.find('#numEnemies').val());
         const avgPV = actor.system.characteristics.secondaries.lifePoints.value;
