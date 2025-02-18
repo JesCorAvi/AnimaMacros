@@ -1,4 +1,5 @@
-//esta version actualiza el token sobre el que se invoca, util si no tienes el token asociado.
+//esta version crea un actor de la masa y no modifica el token original, por si tienes los tokens y los actores vinculados.
+
 const selectedToken = canvas.tokens.controlled[0];
 if (!selectedToken) {
   ui.notifications.error("¡No hay ningún token seleccionado!");
@@ -15,7 +16,7 @@ const defenseType = actor.system.general.settings.defenseType.value;
 const dañoAcumulativo = defenseType === "resistance";
 
 new Dialog({
-  title: "Modificar Masa de Enemigos",
+  title: "Crear Masa de Enemigos",
   content: `
     <form>
       <div class="form-group">
@@ -25,8 +26,8 @@ new Dialog({
     </form>
   `,
   buttons: {
-    modificar: {
-      label: "Modificar",
+    crear: {
+      label: "Crear",
       callback: async (html) => {
         const numEnemies = parseInt(html.find('#numEnemies').val());
         const avgPV = actor.system.characteristics.secondaries.lifePoints.value;
@@ -37,7 +38,9 @@ new Dialog({
         const equippedWeapon = actor.items.find(
           (item) => item.type === "weapon" && item.system.equipped.value
         );
-        const avgDano = equippedWeapon ? equippedWeapon.system.damage.final.value : 0; 
+        const avgDano = equippedWeapon
+          ? equippedWeapon.system.damage.final.value
+          : 0; 
 
         if (!dañoAcumulativo) {
           const pvPorUnidad = Math.floor(avgPV / 50) * 50;
@@ -71,36 +74,47 @@ new Dialog({
         const HO = avgHO + bonusHO;
         const danoMass = Math.floor(avgDano * 0.5);
 
-        await actor.update({
-          "system.characteristics.secondaries.lifePoints": {
-            value: totalPV,
-            max: totalPV
-          },
-          "system.combat.attack": {
-            base: { value: HO },
-            final: { value: HO }
-          },
-          "system.general.description.value": `
+        const newActorData = duplicate(actor.toObject());
+        newActorData.name = `${actor.name} (Masa)`;
+        
+        newActorData.system.characteristics.secondaries.lifePoints = {
+          value: totalPV,
+          max: totalPV
+        };
+        newActorData.system.combat.attack = {
+          base: { value: HO },
+          final: { value: HO }
+        };
+        newActorData.system.general.description = {
+          value: `
             <div class="masa-info">
               <p>⚔️ <strong>HO Actual:</strong> ${HO} (+${bonusHO})</p>
               <p>❤️ <strong>PV Totales:</strong> ${totalPV}</p>
               <p>👥 <strong>Unidades:</strong> ${numEnemies}</p>
               <p>🔢 <em>Tipo: ${tipoMasa}</em></p>
             </div>
-          `,
-          "system.general.settings.defenseType.value": "mass"
-          ,
-          "system.general.modifiers.extraDamage.value": danoMass,
-          "flags.masa-enemigos": {
+          `
+        };
+        newActorData.system.general.modifiers.extraDamage.value = danoMass;
+
+
+        newActorData.flags = {
+          ...newActorData.flags,
+          "masa-enemigos": {
             version: 2,
             ...calculationData,
             totalOriginal: totalPV,
             numOriginal: numEnemies,
             hoBase: avgHO
           }
-        });
+        };
 
-        ui.notifications.info("Masa modificada exitosamente");
+        const newActor = await Actor.create(newActorData);
+        const tokenData = duplicate(selectedToken.data);
+        tokenData.actorId = newActor.id;
+        tokenData.x += canvas.grid.size * 2;
+        await canvas.scene.createEmbeddedDocuments("Token", [tokenData]);
+        ui.notifications.info("Masa creada exitosamente");
       }
     }
   }
