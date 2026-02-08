@@ -1,113 +1,104 @@
 # Macros FoundryVTT Anima Beyond Fantasy
 
-En este fork he implementado cambios en los scripts, añadiendo opciones útiles basadas en mi experiencia en partidas. A continuación, detallo los cambios realizados:
+Este repositorio contiene una colección de macros personalizadas diseñadas para el sistema de *Anima: Beyond Fantasy* en FoundryVTT. Estas herramientas automatizan la gestión de personajes, incluyendo la acumulación de Ki y Zeón, el lanzamiento de conjuros, el uso de técnicas, la gestión de reglas de combate de masas y utilidades para el director de juego.
 
-## Cambios en la acumulación y uso de Ki
+## Tabla de Contenidos
 
-- **Acumulación de Ki**: 
-  - Ahora, al acumular Ki, este se resta directamente del tanque.
-  - Al lanzar una técnica, el Ki se resta de lo acumulado en lugar del tanque (similar al funcionamiento del Zeon).
-- **Mensaje de acumulación**: 
-  - El mensaje al acumular Ki ahora muestra:
-    - El acumulado en el turno actual.
-    - El total acumulado por característica.
-    - La suma de todas las acumulaciones.
-- **Nuevo botón para manejar acumulaciones**: 
-  - Botón para devolver las acumulaciones de Ki al tanque, restando el Ki correspondiente.
-  - Opción para evitar que se reste si ya se ha lanzado una técnica.
+- [Instalación](#instalación)
+- [Gestión de Ki y Zeón](#gestión-de-ki-y-zeón)
+- [Magia y Técnicas](#magia-y-técnicas)
+- [Combate de Masas](#combate-de-masas)
+- [Recuperación y Descanso](#recuperación-y-descanso)
+- [Gestión de Sesión y Utilidades](#gestión-de-sesión-y-utilidades)
+- [Créditos](#créditos)
+- [Licencia](#licencia)
 
-## Cambios en el script de lanzamiento de hechizos
+## Instalación
 
-- **Hechizos mantenidos**: 
-  -Ahora al ser lanzados como mantenidos, se añaden al apartado correspondiente del token:
-    - **Diarios**: Al apartado de "hechizos diarios".
-    - **Por turno**: Al apartado de "hechizos seleccionados" (utilizo este por falta de otro apartado especifico).
-  - Se incrementa el contador de "mantenidos" si es que el hechizo era por turno.
-- **Detalles en el chat al lanzar hechizos**: 
-  - Se muestra la siguiente información:
-    - Nombre del hechizo.
-    - Grado.
-    - Si es mantenido.
-    - Coste de Zeon.
-    - Descripción del hechizo (si tiene).
-    - Descripción del grado.
+Para utilizar las macros en tu partida de Foundry VTT sigue estos pasos:
 
-## Cambios en el script de acumulación de Zeon
+1. **Obtener el código**: Copia el código de la macro deseada desde este repositorio.
+2. **Crear la Macro**:
+    - Abre Foundry VTT.
+    - Haz clic en la pestaña de "Carpetas de Macros" en la barra inferior.
+    - Crea una nueva macro, selecciona el tipo "Script" y pega el código.
+3. **Configuración**: Algunas macros (como `send-rest.js` o `end-of-session.js`) pueden requerir editar variables al inicio del script (como UUIDs o nombres de playlists).
 
-- **Botón "Regenerar Zeon"**: 
-  - Regenera el tanque de Zeon según la regeneración zeónica actual.
-- **Unificación del botón de acumulación**: 
-  - Aparece una ventana para elegir si acumular de forma plena o no.
-- **Control de hechizos mantenidos**: 
-  - Muestra los hechizos mantenidos (diarios y por turno).
-  - Permite dejar de mantenerlos fácilmente, generando un mensaje en el chat indicando qué personaje dejó de mantener qué hechizo. Ademas, borra el hechizo mantenido del apartado correspondiente y del contador de "mantenidos" si era por turno.
+## Gestión de Ki y Zeón
 
+### [Acumulación de Ki](accumulate-ki.js)
+Permite al personaje acumular puntos de Ki en sus características.
+- **Acumulación Plena y Parcial**: Elige entre acumulación completa (sin acciones activas) o parcial (mitad de acumulación).
+- **Gestión de Cansancio**: Permite gastar puntos de cansancio para potenciar la acumulación.
+- **Automatización**: Resta el Ki del tanque genérico y lo distribuye a las características seleccionadas (FUE, DES, AGI, CON, POD, VOL).
+- **Borrado**: Incluye opciones para devolver el Ki al tanque genérico (con o sin penalización por falta de uso).
 
+### [Acumulación de Zeón](accumulate-zeon.js)
+Gestiona la acumulación de Zeón mágico considerando los penalizadores por armadura y yelmo.
+- **Interfaz unificada**: Ventana para elegir entre acumulación plena, parcial o regeneración.
+- **Regeneración**: Botón para regenerar el Zeón diario basándose en la regeneración zeónica del personaje.
+- **Mantenimiento**: Muestra y gestiona los hechizos mantenidos (diarios y por turno), permitiendo cancelarlos y actualizar los costes automáticamente.
+- **Devolución**: Permite devolver el Zeón acumulado al tanque si no se utiliza.
 
-This repository contains custom macros designed for the Anima Beyond Fantasy in FoundryVTT. These macros automate various aspects of character management, such as Ki accumulation, Zeon accumulation, spell casting, and technique usage...
+## Magia y Técnicas
 
-## Table of Contents
+### [Lanzamiento de Hechizos](cast-spell.js)
+Facilita el lanzamiento de conjuros desde la lista del personaje.
+- **Selección de Grado**: Permite elegir el grado del hechizo (Base, Intermedio, Avanzado, Arcano).
+- **Cálculos automáticos**: Verifica si tienes suficiente Zeón acumulado e Inteligencia requerida.
+- **Mantenimiento**: Opción para lanzar el hechizo como "mantenido", añadiéndolo automáticamente a la lista de mantenimiento y restando el coste correspondiente.
+- **Información en Chat**: Muestra una tarjeta detallada con la descripción del hechizo y del grado seleccionado.
 
-- [Macros FoundryVTT Anima Beyond Fantasy](#macros-foundryvtt-anima-beyond-fantasy)
-- [Installation](#installation)
-- [Macros Overview](#macros-overview)
-  - [1. Ki Accumulation Macro](#1-ki-accumulation-macro)
-  - [2. Zeon Accumulation Macro](#2-zeon-accumulation-macro)
-  - [3. Spell Casting Macro](#3-spell-casting-macro)
-  - [4. Technique Use Macro](#4-technique-use-macro)
-- [Contributing](#contributing)
-- [License](#license)
+### [Uso de Técnicas de Ki](use-technique-ki.js)
+Macro para ejecutar técnicas de Ki aprendidas.
+- **Verificación de Costes**: Comprueba si hay suficiente Ki acumulado en las características específicas (FUE, AGI, etc.) que requiere la técnica.
+- **Consumo**: Descuenta automáticamente el Ki acumulado. Si sobra Ki en la característica, lo devuelve al tanque genérico.
 
-## Installation
+## Combate de Masas
+Colección de scripts para aplicar las reglas de Combate de Masas de *Anima: Beyond Fantasy*, escalando las estadísticas de un token según el número de enemigos que representa.
 
-To use the macros in your Foundry VTT game follow these steps
+### [Unificación de Masas (Recomendado)](mass-unification.js)
+Macro "Todo en uno" que detecta si el token ya es una masa o no.
+- **Creación**: Si es un token normal, pide el número de enemigos y lo transforma en una Masa (calcula PV, HO y Daño según las reglas).
+- **Actualización**: Si ya es una Masa, actualiza sus estadísticas basándose en la vida restante (calcula bajas y reduce la HO proporcionalmente).
 
-1. Get the Macro code:
-    - Copy each macro's code from this repository.
-2. Create a new Macro in Foundry VTT:
-    - Open your Foundry VTT game.
-    - Click on the "Macros" tab in the bottom bar.
-    - Click the "+" button to create a new macro.
-    - Choose "Script" as the macro type.
-    - Paste the macro code into the macro editor.
-    - Give the macro a name corresponding to its function (e.g., "Ki Accumulation").
-3. Assign an Icon
-    - Click on the macro's icon to select an image that represents the macro.
-4. Save the Macro
-5. Add the Macro to Your Hotbar:
-    - Drag the macro from the "Macros" directory to your hotbar for easy access.
+### Scripts individuales de Masas
+Alternativas modulares a la macro unificada:
+- **[Calculadora de Masas](calculate-mass.js)**: Simplemente calcula y muestra en una ventana las estadísticas (PV, HO, Daño) que tendría una masa, sin modificar el token.
+- **[Crear Masa (Sobre Token)](create-mass.js)**: Convierte el token seleccionado en una masa, modificando su hoja de personaje directamente.
+- **[Crear Actor de Masa](create-mass-actor.js)**: Crea un **nuevo actor** separado en la escena que representa a la masa, dejando el actor original intacto (ideal para no ensuciar la ficha del PNJ original).
+- **[Actualizar Masa](update-mass.js)**: Recalcula las unidades restantes y bonificadores de una masa existente basándose en su daño recibido.
 
-Repeat these steps for each macro you wish to add to your game.
+## Recuperación y Descanso
 
-## Macros Overview
+### [Sistema de Recuperación](recover.js)
+Una interfaz visual avanzada para que los jugadores gestionen sus descansos.
+- **Detección automática**: Lee la regeneración física, zeónica y de Ki del personaje.
+- **Modos**: Permite elegir entre "Descanso" (recupera fatiga y penalizadores) o "Recuperación Activa" (solo regeneración por tiempo).
+- **Cálculo**: Aplica automáticamente la curación de PV, recuperación de Ki, Zeón y Cansancio según las horas introducidas y el nivel de regeneración.
 
-### 1. [Ki Accumulation Macro](accumulate-ki.js)
+### [Enviar Descanso](send-rest.js)
+Herramienta para el GM. Envía una tarjeta al chat con un botón. Al pulsarlo, los jugadores ejecutan la macro de `recover.js` automáticamente.
+- *Nota: Requiere configurar la UUID de la macro `recover.js` dentro del script.*
 
-This macro allows a character to accumulate Ki points, either fully or partially, in selected characteristics. It provides a user interface to choose which characteristics to accumulate Ki in, adjusts for fatigue usage, and updates the character's Ki accumulation and fatigue values accordingly.
+## Gestión de Sesión y Utilidades
 
-### 2. [Zeon Accumulation Macro](accumulate-zeon.js)
+### [Fin de Sesión](end-of-session.js)
+Macro para cerrar la partida de forma espectacular.
+- **Ambiente**: Detiene la música actual y reproduce una playlist/canción específica (configurable, ej: "Ending").
+- **Mensaje**: Muestra un banner visual de "FIN DE SESIÓN".
+- **MVP de la Sesión**: Analiza el chat de las últimas 24 horas y genera un "Podio" con las 3 mejores tiradas de dados realizadas, mostrando quién las hizo y qué habilidad usó.
 
-This macro enables a character to accumulate Zeon, either fully or partially, while considering fatigue usage and modifications. It updates the character's Zeon values and communicates the changes via a chat message.
+### [Abrir PDF por página](open-pdf-by-page.js)
+Utilidad para abrir una página específica de un PDF cargado en Foundry.
+- Útil para referencias rápidas de reglas.
+- *Requiere el módulo PDF Pager.*
 
-### 3. [Spell Casting Macro](cast-spell.js)
+## Créditos
 
-This macro allows a character to cast spells from their spell list. It provides a user interface to select a spell and its grade, previews the spell details, checks for sufficient Zeon and intelligence, and updates the character's Zeon accumulation upon casting or maintaining the spell.
+Este repositorio es un fork que incluye modificaciones y nuevas funcionalidades basadas en el trabajo original de **Miliviu**.
 
-### 4. [Technique Use Macro](use-technique-ki.js)
+- Repositorio Original: [AnimaMacros por Miliviu](https://github.com/Miliviu/AnimaMacros)
 
-This macro allows a character to use their Ki techniques. It provides a user interface to select a technique, displays the Ki costs and accumulated Ki, checks for sufficient Ki in each characteristic, and updates the character's Ki values accordingly. 
-
-TODO: Add support for Maintining Ki habilities (we'll need to change how the system stores Ki Techniques)
-
-
-## Contributing
-
-If you wish to contribute to this collection of macros:
-
-- Report Issues: Use the repository's issue tracker to report bugs or suggest enhancements.
-- Submit Pull Requests: Fork the repository, make your changes, and submit a pull request for review.
-- Share ideas: Feel free to ask for any kind of Macro in the [vtt-macros-and-tips](https://discord.com/channels/327226685399367680/765299386506805252) Discord channel of the Anima Beyond Fantasy Spanish Discord or the issue tracker.
-
-
-## License
-This project is open-source and available under the [MIT License](LICENSE).
+## Licencia
+Este proyecto es de código abierto y está disponible bajo la [Licencia MIT](LICENSE).
