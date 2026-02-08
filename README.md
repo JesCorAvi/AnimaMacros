@@ -74,7 +74,7 @@ Alternativas modulares a la macro unificada:
 ### [Sistema de Recuperación](recover.js)
 Una interfaz visual avanzada para que los jugadores gestionen sus descansos.
 - **Detección automática**: Lee la regeneración física, zeónica y de Ki del personaje.
-- **Modos**: Permite elegir entre "Descanso" (recupera fatiga y penalizadores) o "Recuperación Activa" (solo regeneración por tiempo).
+- **Modos**: Permite elegir entre "Descansado"  o "Sin descanso".
 - **Cálculo**: Aplica automáticamente la curación de PV, recuperación de Ki, Zeón y Cansancio según las horas introducidas y el nivel de regeneración.
 
 ### [Enviar Descanso](send-rest.js)
